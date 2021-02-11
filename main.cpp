@@ -1,3 +1,9 @@
+#include "pch.h"
+#include "SA2ModLoader.h"
+#include <string>
+#include "ModelInfo.h"
+#include <ctime>
+
 //Non SA2Modloader structs
 struct BlackMarketItemAttributes
 {
