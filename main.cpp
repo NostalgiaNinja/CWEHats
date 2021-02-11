@@ -42,7 +42,7 @@ extern "C"
     {
 
         //ChaoTexlistLoad - "Filename" - Do NOT conflict with other hat or fruit mods.
-        RegisterChaoTexlistLoad("CustomHats", &texlist_HATS);
+        RegisterChaoTexlistLoad("ExampleHats", &texlist_HATS);
 
         //EasyRegisterHat - "Filename", Price, Sale, "Name", "Description", Hide Head (Defaults to false if omitted) - Place hat models in the root folder of the mod folder.
         //Note to whoever copies this code - this is sample code and needs to be changed as appropriate, look at the function calls for what needs to be added.
