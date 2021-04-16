@@ -19,8 +19,8 @@ enum EAccessoryType : unsigned char
 {
     Head = 0,
     Face,
-    Chest,
-    Feet,
+    Generic1,
+    Generic2,
     AccessoryTypeCount
 };
 
