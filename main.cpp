@@ -3,7 +3,7 @@
 #include <string>
 #include "ModelInfo.h"
 
-//Non SA2Modloader structs
+//Black Market struct - required for loading the hats into the black market.
 struct BlackMarketItemAttributes
 {
     int PurchasePrice;
@@ -14,7 +14,7 @@ struct BlackMarketItemAttributes
     __int16 Unknown;
 };
 
-//EAccessory Type defaults 0 to head, other to other parts of the body.
+//EAccessory Type defaults 0 to head, other to other parts of the body. This should be used instead going forward
 enum EAccessoryType : unsigned char
 {
     Head = 0,
@@ -40,19 +40,19 @@ extern "C"
 
     std::string pathStr;
 
-    //Easy Register for hats - Docu v1.2 adds bool hideHead and defaults to false
-    void EasyRegisterHat(const char *path, int rings, int sellPrice, const char *name, const char *desc, bool hideHead = false)
+    //Easy Register for hats - Docu v1.2 defaults hideHead to true - THIS HIDES HEADS! Refactor your code if you use these new functions and previously used the old ones!
+    void EasyRegisterHat(const char* path, int rings, int sellPrice, const char* name, const char* desc, bool hideHead = true)
     {
-        BlackMarketItemAttributes attrib = {rings, sellPrice, 0, -1, -1, 0};
+        BlackMarketItemAttributes attrib{ rings, sellPrice, 0, -1, -1, 0 };
         std::string finalPath = pathStr + "\\" + path;
-        ModelInfo *file = new ModelInfo(finalPath);
-        RegisterChaoHat(file->getmodel(), &texlist_HATS, &attrib, name, desc, false);
+        ModelInfo* file = new ModelInfo(finalPath);
+        RegisterChaoHat(file->getmodel(), &texlist_HATS, &attrib, name, desc, true);
     }
 
-    //Easy Register for Accessories - Docu v1.2 adds new EasyRegister for people to play with.
+    //Easy Register for Accessories - Docu v1.2 adds new EasyRegister for people to play with, allows other body parts to be constrained to.
     void EasyRegisterAccessory(const char* path, int rings, int sellprice, const char* name, const char* desc, EAccessoryType type)
     {
-        BlackMarketItemAttributes attrib = { rings, sellprice, 0, -1, -1, 0 };
+        BlackMarketItemAttributes attrib{ rings, sellprice, 0, -1, -1, 0 };
         std::string finalPath = pathStr + "\\" + path;
         ModelInfo* file = new ModelInfo(finalPath);
         RegisterChaoAccessory(type, file->getmodel(), &texlist_HATS, &attrib, name, desc);
@@ -60,18 +60,14 @@ extern "C"
 
     void CWELoad()
     {
-
-        //ChaoTexlistLoad - "Filename" - Do NOT conflict with other hat or fruit mods.
+        //ChaoTexlistLoad - "Filename" - Do NOT conflict with other hat or fruit mods. - make sure your UIDs are unique!
         RegisterChaoTexlistLoad("ExampleHats", &texlist_HATS);
 
-        //EasyRegisterHat - "Filename", Price, Sale, "Name", "Description", Hide Head (Defaults to false if omitted) - Place hat models in the root folder of the mod folder.
-        //Note to whoever copies this code - this is sample code and needs to be changed as appropriate, look at the function calls for what needs to be added.
-        EasyRegisterHat("filename.sa2mdl", 100, 100, "Name", "Description", false);
+        //EasyRegisterHat - "Filename", Price, Sale, "Name", "Description", - Place hat models in the root folder of the mod folder.
+        EasyRegisterHat("filename.sa2mdl", 100, 100, "Name", "Description");
 
-        //EasyRegisterAccessory - EAccessoryType (see enum above), "Filename", buy, sell, "Name", "Description" - Adding example for documentation sake
+        //EasyRegisterAccessory - "Filename", buy, sell, "Name", "Description", EAccessoryType (see enum above) - Adding a documentation example
         EasyRegisterAccessory("filename.sa2mdl",100,100,"Name","Description",Head);
-
-        
     }
 
     __declspec(dllexport) void Init(const char *path, HelperFunctions &func)
@@ -79,8 +75,9 @@ extern "C"
         //pathStr defined as per the easy register functions - Do not remove or game will crash!
         pathStr = std::string(path);
 
-        //load CWE Module
         HMODULE h = GetModuleHandle(L"CWE");
+
+        //Registration functions
         RegisterChaoHat = (int (*)(NJS_OBJECT * model, NJS_TEXLIST * texlist, BlackMarketItemAttributes * attrib, const char *name, const char *description, bool hideHead)) GetProcAddress(h, "RegisterChaoHat");
         RegisterChaoAccessory = (int (*)(EAccessoryType type, NJS_OBJECT * model, NJS_TEXLIST * texlist, BlackMarketItemAttributes * attrib, const char* name, const char* description)) GetProcAddress(h, "RegisterChaoAccessory");
         RegisterDataFunc = (void (*)(void *ptr))GetProcAddress(h, "RegisterDataFunc");
@@ -88,5 +85,9 @@ extern "C"
 
         RegisterDataFunc(CWELoad);
     }
+
+    //REQUIRED! DO NOT REMOVE OR SA2 WILL NOT RECOGNIZE THIS AS A MOD!
     __declspec(dllexport) ModInfo SA2ModInfo = {ModLoaderVer};
 }
+
+//OUTSIDE OF SCOPE! DO NOT WRITE HERE!!!
