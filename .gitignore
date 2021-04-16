@@ -1,4 +1,4 @@
-\.git
+.git\*
 MemAccess.h
 ninja.h
 njdef.h
