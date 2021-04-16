@@ -8,3 +8,4 @@ SA2ModInfo.h
 SA2Modloader.h
 SA2Structs.h
 SA2Variables.h
+.vs/*
