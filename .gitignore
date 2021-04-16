@@ -1,1 +1,10 @@
 \.git
+MemAccess.h
+ninja.h
+njdef.h
+SA2Functions.h
+SA2Enums.h
+SA2ModInfo.h
+SA2Modloader.h
+SA2Structs.h
+SA2Variables.h
