@@ -19,8 +19,8 @@ enum EAccessoryType : unsigned char
 {
     Head = 0,
     Face,
-    Generic1,
-    Generic2,
+    Chest,
+    Feet,
     AccessoryTypeCount
 };
 
@@ -32,6 +32,7 @@ extern "C"
     int (*RegisterChaoAccessory)(EAccessoryType type, NJS_OBJECT* model, NJS_TEXLIST* texlist, BlackMarketItemAttributes* attrib, const char* name, const char* description);
     void (*RegisterChaoTexlistLoad)(const char *name, NJS_TEXLIST *load);
     void (*RegisterDataFunc)(void *ptr);
+    void (*AccessoryMakeBald)(int accID);
 
     //Load Textures - Add textures to the RegisterChaoTexlistLoad "filename".PAK file, and put in gd_PC/PRS
     //Increase the array size when close to reaching the amount of textures specified, or your game will crash!
@@ -41,33 +42,37 @@ extern "C"
     std::string pathStr;
 
     //Easy Register for hats - Docu v1.2 defaults hideHead to true - THIS HIDES HEADS! Refactor your code if you use these new functions and previously used the old ones!
-    void EasyRegisterHat(const char* path, int rings, int sellPrice, const char* name, const char* desc, bool hideHead = true)
+    int EasyRegisterHat(const char *path, int rings, int sellPrice, const char *name, const char *desc, bool hideHead = true)
     {
-        BlackMarketItemAttributes attrib{ rings, sellPrice, 0, -1, -1, 0 };
+        BlackMarketItemAttributes attrib{rings, sellPrice, 0, -1, -1, 0};
         std::string finalPath = pathStr + "\\" + path;
-        ModelInfo* file = new ModelInfo(finalPath);
-        RegisterChaoHat(file->getmodel(), &texlist_HATS, &attrib, name, desc, true);
+        ModelInfo *file = new ModelInfo(finalPath);
+        return RegisterChaoHat(file->getmodel(), &texlist_HATS, &attrib, name, desc, true);
     }
 
     //Easy Register for Accessories - Docu v1.2 adds new EasyRegister for people to play with, allows other body parts to be constrained to.
-    void EasyRegisterAccessory(const char* path, int rings, int sellprice, const char* name, const char* desc, EAccessoryType type)
+    int EasyRegisterAccessory(const char* path, int rings, int sellprice, const char* name, const char* desc, EAccessoryType type)
     {
         BlackMarketItemAttributes attrib{ rings, sellprice, 0, -1, -1, 0 };
         std::string finalPath = pathStr + "\\" + path;
         ModelInfo* file = new ModelInfo(finalPath);
-        RegisterChaoAccessory(type, file->getmodel(), &texlist_HATS, &attrib, name, desc);
+        return RegisterChaoAccessory(type, file->getmodel(), &texlist_HATS, &attrib, name, desc);
     }
 
     void CWELoad()
     {
+        //create IDs for hats here.
+        int exampleHatID;
+        int exampleAccessoryID;
+
         //ChaoTexlistLoad - "Filename" - Do NOT conflict with other hat or fruit mods. - make sure your UIDs are unique!
         RegisterChaoTexlistLoad("ExampleHats", &texlist_HATS);
 
         //EasyRegisterHat - "Filename", Price, Sale, "Name", "Description", - Place hat models in the root folder of the mod folder.
-        EasyRegisterHat("filename.sa2mdl", 100, 100, "Name", "Description");
+        exampleHatID = EasyRegisterHat("filename.sa2mdl", 100, 100, "Name", "Description");
 
         //EasyRegisterAccessory - "Filename", buy, sell, "Name", "Description", EAccessoryType (see enum above) - Adding a documentation example
-        EasyRegisterAccessory("filename.sa2mdl",100,100,"Name","Description",Head);
+        exampleAccessoryID = EasyRegisterAccessory("filename.sa2mdl",100,100,"Name","Description",Head);
     }
 
     __declspec(dllexport) void Init(const char *path, HelperFunctions &func)
@@ -82,7 +87,7 @@ extern "C"
         RegisterChaoAccessory = (int (*)(EAccessoryType type, NJS_OBJECT * model, NJS_TEXLIST * texlist, BlackMarketItemAttributes * attrib, const char* name, const char* description)) GetProcAddress(h, "RegisterChaoAccessory");
         RegisterDataFunc = (void (*)(void *ptr))GetProcAddress(h, "RegisterDataFunc");
         RegisterChaoTexlistLoad = (void (*)(const char *name, NJS_TEXLIST *load))GetProcAddress(h, "RegisterChaoTexlistLoad");
-
+        AccessoryMakeBald = (void(*)(int accID))GetProcAddress(h, "MakeAccessoryBald");
         RegisterDataFunc(CWELoad);
     }
 
