@@ -87,7 +87,7 @@ extern "C"
         RegisterChaoAccessory = (int (*)(EAccessoryType type, NJS_OBJECT * model, NJS_TEXLIST * texlist, BlackMarketItemAttributes * attrib, const char* name, const char* description)) GetProcAddress(h, "RegisterChaoAccessory");
         RegisterDataFunc = (void (*)(void *ptr))GetProcAddress(h, "RegisterDataFunc");
         RegisterChaoTexlistLoad = (void (*)(const char *name, NJS_TEXLIST *load))GetProcAddress(h, "RegisterChaoTexlistLoad");
-        AccessoryMakeBald = (void(*)(int accID))GetProcAddress(h, "MakeAccessoryBald");
+        AccessoryMakeBald = (void(*)(int accID))GetProcAddress(h, "AccessoryMakeBald");
         RegisterDataFunc(CWELoad);
     }
 
