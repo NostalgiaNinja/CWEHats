@@ -19,8 +19,8 @@ enum EAccessoryType : unsigned char
 {
     Head = 0,
     Face,
-    Chest,
-    Feet,
+    Generic1,
+    Generic2,
     AccessoryTypeCount
 };
 
@@ -61,18 +61,16 @@ extern "C"
 
     void CWELoad()
     {
-        //create IDs for hats here.
-        int exampleHatID;
-        int exampleAccessoryID;
 
         //ChaoTexlistLoad - "Filename" - Do NOT conflict with other hat or fruit mods. - make sure your UIDs are unique!
         RegisterChaoTexlistLoad("ExampleHats", &texlist_HATS);
 
         //EasyRegisterHat - "Filename", Price, Sale, "Name", "Description", - Place hat models in the root folder of the mod folder.
-        exampleHatID = EasyRegisterHat("filename.sa2mdl", 100, 100, "Name", "Description");
+        int exampleHatID = EasyRegisterHat("filename.sa2mdl", 100, 100, "Name", "Description");
 
         //EasyRegisterAccessory - "Filename", buy, sell, "Name", "Description", EAccessoryType (see enum above) - Adding a documentation example
-        exampleAccessoryID = EasyRegisterAccessory("filename.sa2mdl",100,100,"Name","Description",Head);
+        int exampleAccessoryID = EasyRegisterAccessory("filename.sa2mdl",100,100,"Name","Description",Head);
+        AccessoryMakeBald(exampleAccessoryID);
     }
 
     __declspec(dllexport) void Init(const char *path, HelperFunctions &func)
